@@ -9,6 +9,7 @@ app.use(cors());
 
 router.get('/', async (ctx, next) => {
   const query = ctx.request.query
+  console.log(query)
   const browser = await puppeteer.launch({ headless: true })
   const page = await browser.newPage()  
   // await page.emulate(devices['iPhone X'])    
@@ -24,7 +25,7 @@ router.get('/', async (ctx, next) => {
     }
   }).then(res => {
     ctx.status = 200;
-    ctx.type = 'buffer';
+    ctx.type = 'blob';
     ctx.length = Buffer.byteLength(res);
     ctx.body = res;
   }).catch(error => {
