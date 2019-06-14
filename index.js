@@ -16,7 +16,7 @@ router.get('/', async (ctx, next) => {
   await page.goto(query.url)    
   // await page.waitForNavigation()
   await page.screenshot({
-    path:'result.png',
+    path:'./result/result.png',
     clip: {
       x: 0,
       y: 0,
