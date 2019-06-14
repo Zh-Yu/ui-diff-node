@@ -9,13 +9,27 @@ app.use(cors());
 
 router.get('/', async (ctx, next) => {
   const query = ctx.request.query
-  console.log(ctx.request.query)
-  const browser = await puppeteer.launch({ headless: false })
-  const page = await browser.newPage()    
+  const browser = await puppeteer.launch({ headless: true })
+  const page = await browser.newPage()  
   // await page.emulate(devices['iPhone X'])    
   await page.goto(query.url)    
-  await page.waitForNavigation()
-  await page.screenshot({ path:'./result.png'})
+  // await page.waitForNavigation()
+  await page.screenshot({
+    path:'result.png',
+    clip: {
+      x: 0,
+      y: 0,
+      width: Number(query.width),
+      height: Number(query.height)
+    }
+  }).then(res => {
+    ctx.status = 200;
+    ctx.type = 'buffer';
+    ctx.length = Buffer.byteLength(res);
+    ctx.body = res;
+  }).catch(error => {
+    console.log(error)
+  })
   await browser.close()
 })
 
