@@ -5,23 +5,40 @@ const devices = require('puppeteer/DeviceDescriptors')
 const puppeteer = require('puppeteer');
 const app = new Koa();
 
-app.use(cors());
+app.use(cors({
+  credentials: true
+}));
 
 router.get('/', async (ctx, next) => {
   const query = ctx.request.query
   console.log(query)
-  const browser = await puppeteer.launch({ headless: true })
-  const page = await browser.newPage()  
+  const cookie = ctx.headers.cookie
+  console.log(cookie)
+  const browser = await puppeteer.launch({ headless: false })
+  const page = await browser.newPage()
+
   await page.goto(query.url, {
     timeout: 0,
     waitUntil: ['load', 'domcontentloaded', "networkidle0"]
   })
+
+  if (cookie) {
+    await page.setCookie(...(cookie.split('; ').map(item => {
+      let obj = {}
+      obj.name = item.split('=')[0]
+      obj.value = item.split('=')[1]
+      return obj
+    })))
+  }
+  
   if (query.specialDomToWailt) {
     await page.waitFor(`'${query.specialDomToWailt}'`)
   }
+
   if (query.devices) {
     await page.emulate(devices[query.devices])
   }
+
   await page.screenshot({
     path:'./result/result.png',
     clip: {
