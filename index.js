@@ -17,6 +17,12 @@ router.get('/', async (ctx, next) => {
   const browser = await puppeteer.launch({ headless: false })
   const page = await browser.newPage()
 
+  // page.setViewport({
+  //   width: Number(query.width),
+  //   height: Number(query.height),
+  //   deviceScaleFactor: 1
+  // })
+
   await page.goto(query.url, {
     timeout: 0,
     waitUntil: ['load', 'domcontentloaded', "networkidle0"]
